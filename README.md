@@ -564,11 +564,14 @@ local extraPage   = makeTab("سبام اكسترا")
 -- Page: نسخ
 ----------------------------------------------------------------
 local selectedName = nil
-local nameMode = "full"  -- "full" = اسم كامل ، "three" = ثلاث حروف
+local nameMode     = "full"  -- "full" = اسم كامل ، "three" = ثلاث حروف ، "silent" = نسخ خفي
+local prevNameMode = "full"   -- آخر وضع طبيعي (full/three) قبل النسخ الخفي
+local silentMode   = false    -- عند true: لا يُرسل عبر الشات
 
 local function getEffectiveName()
     if not selectedName then return nil end
-    if nameMode == "three" then
+    local mode = (nameMode == "silent") and prevNameMode or nameMode
+    if mode == "three" then
         return selectedName:sub(1, 3)
     end
     return selectedName
@@ -695,7 +698,7 @@ nameModeRow.Position = UDim2.new(0, 10, 0, 124)
 nameModeRow.Size = UDim2.new(1, -20, 0, 34)
 
 local fullNameBtn = Instance.new("TextButton", nameModeRow)
-fullNameBtn.Size = UDim2.new(0.333, -4, 1, 0)
+fullNameBtn.Size = UDim2.new(0.33, -2, 1, 0)
 fullNameBtn.Position = UDim2.new(0, 0, 0, 0)
 fullNameBtn.BackgroundColor3 = Color3.fromRGB(0, 160, 80)
 fullNameBtn.BackgroundTransparency = 0.1
@@ -703,80 +706,82 @@ fullNameBtn.BorderSizePixel = 0
 fullNameBtn.AutoButtonColor = false
 fullNameBtn.Font = Enum.Font.GothamBold
 fullNameBtn.Text = "اسم كامل"
-fullNameBtn.TextSize = 13
+fullNameBtn.TextSize = 14
 fullNameBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 Instance.new("UICorner", fullNameBtn).CornerRadius = UDim.new(0, 9)
 local fnStroke = Instance.new("UIStroke", fullNameBtn)
 fnStroke.Color = Color3.fromRGB(0, 255, 130); fnStroke.Thickness = 2; fnStroke.Transparency = 0.1
 
 local threeLettersBtn = Instance.new("TextButton", nameModeRow)
-threeLettersBtn.Size = UDim2.new(0.333, -4, 1, 0)
-threeLettersBtn.Position = UDim2.new(0.333, 4, 0, 0)
+threeLettersBtn.Size = UDim2.new(0.33, -2, 1, 0)
+threeLettersBtn.Position = UDim2.new(0.34, 2, 0, 0)
 threeLettersBtn.BackgroundColor3 = Color3.fromRGB(30, 50, 30)
 threeLettersBtn.BackgroundTransparency = 0.15
 threeLettersBtn.BorderSizePixel = 0
 threeLettersBtn.AutoButtonColor = false
 threeLettersBtn.Font = Enum.Font.GothamBold
 threeLettersBtn.Text = "ثلاث حروف"
-threeLettersBtn.TextSize = 13
+threeLettersBtn.TextSize = 14
 threeLettersBtn.TextColor3 = Color3.fromRGB(200, 255, 215)
 Instance.new("UICorner", threeLettersBtn).CornerRadius = UDim.new(0, 9)
 local tlStroke = Instance.new("UIStroke", threeLettersBtn)
 tlStroke.Color = Color3.fromRGB(0, 200, 100); tlStroke.Thickness = 1.5; tlStroke.Transparency = 0.4
 
--- زر نسخ خفي: يرسل للادمن ريموت فقط بدون شات
-local hiddenMode = false
-local hiddenBtn = Instance.new("TextButton", nameModeRow)
-hiddenBtn.Size = UDim2.new(0.333, -4, 1, 0)
-hiddenBtn.Position = UDim2.new(0.667, 4, 0, 0)
-hiddenBtn.BackgroundColor3 = Color3.fromRGB(40, 30, 60)
-hiddenBtn.BackgroundTransparency = 0.15
-hiddenBtn.BorderSizePixel = 0
-hiddenBtn.AutoButtonColor = false
-hiddenBtn.Font = Enum.Font.GothamBold
-hiddenBtn.Text = "نسخ خفي"
-hiddenBtn.TextSize = 13
-hiddenBtn.TextColor3 = Color3.fromRGB(200, 180, 255)
-Instance.new("UICorner", hiddenBtn).CornerRadius = UDim.new(0, 9)
-local hdnStroke = Instance.new("UIStroke", hiddenBtn)
-hdnStroke.Color = Color3.fromRGB(160, 100, 255); hdnStroke.Thickness = 1.5; hdnStroke.Transparency = 0.4
+local silentModeBtn = Instance.new("TextButton", nameModeRow)
+silentModeBtn.Size = UDim2.new(0.33, -2, 1, 0)
+silentModeBtn.Position = UDim2.new(0.67, 4, 0, 0)
+silentModeBtn.BackgroundColor3 = Color3.fromRGB(30, 20, 55)
+silentModeBtn.BackgroundTransparency = 0.15
+silentModeBtn.BorderSizePixel = 0
+silentModeBtn.AutoButtonColor = false
+silentModeBtn.Font = Enum.Font.GothamBold
+silentModeBtn.Text = "نسخ خفي"
+silentModeBtn.TextSize = 12
+silentModeBtn.TextColor3 = Color3.fromRGB(200, 185, 255)
+Instance.new("UICorner", silentModeBtn).CornerRadius = UDim.new(0, 9)
+local smStroke = Instance.new("UIStroke", silentModeBtn)
+smStroke.Color = Color3.fromRGB(150, 80, 255); smStroke.Thickness = 1.5; smStroke.Transparency = 0.4
 
 local function updateNameModeUI()
+    -- إعادة تعيين الثلاثة أزرار لوضع المُطفأ
+    TweenService:Create(fullNameBtn,    TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(30, 50, 30), BackgroundTransparency = 0.2}):Play()
+    TweenService:Create(threeLettersBtn,TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(30, 50, 30), BackgroundTransparency = 0.2}):Play()
+    TweenService:Create(silentModeBtn,  TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(30, 20, 55),  BackgroundTransparency = 0.2}):Play()
+    fnStroke.Transparency  = 0.5
+    tlStroke.Transparency  = 0.5
+    smStroke.Transparency  = 0.5
+    silentMode = (nameMode == "silent")
     if nameMode == "full" then
         TweenService:Create(fullNameBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(0, 160, 80), BackgroundTransparency = 0.05}):Play()
         fnStroke.Transparency = 0.05
-        TweenService:Create(threeLettersBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(30, 50, 30), BackgroundTransparency = 0.2}):Play()
-        tlStroke.Transparency = 0.5
-    else
-        TweenService:Create(fullNameBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(30, 50, 30), BackgroundTransparency = 0.2}):Play()
-        fnStroke.Transparency = 0.5
+    elseif nameMode == "three" then
         TweenService:Create(threeLettersBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(0, 160, 80), BackgroundTransparency = 0.05}):Play()
         tlStroke.Transparency = 0.05
-    end
-    -- تحديث زر نسخ خفي
-    if hiddenMode then
-        TweenService:Create(hiddenBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(120, 60, 220), BackgroundTransparency = 0.05}):Play()
-        hdnStroke.Transparency = 0.05
-    else
-        TweenService:Create(hiddenBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(40, 30, 60), BackgroundTransparency = 0.2}):Play()
-        hdnStroke.Transparency = 0.5
+    elseif nameMode == "silent" then
+        TweenService:Create(silentModeBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(120, 50, 230), BackgroundTransparency = 0.0}):Play()
+        smStroke.Transparency = 0.0
+        smStroke.Color = Color3.fromRGB(200, 150, 255)
     end
 end
 
 fullNameBtn.MouseButton1Click:Connect(function()
-    nameMode = "full"
+    nameMode = "full"; prevNameMode = "full"
     updateNameModeUI()
 end)
 threeLettersBtn.MouseButton1Click:Connect(function()
-    nameMode = "three"
+    nameMode = "three"; prevNameMode = "three"
     updateNameModeUI()
 end)
-hiddenBtn.MouseButton1Click:Connect(function()
-    hiddenMode = not hiddenMode
-    if hiddenMode then
-        setStatus("🔕 نسخ خفي — الإرسال للادمن فقط بدون شات", true)
+silentModeBtn.MouseButton1Click:Connect(function()
+    if nameMode == "silent" then
+        -- إيقاف النسخ الخفي → رجوع للوضع السابق
+        nameMode = prevNameMode
+        setStatus("✓ النسخ الخفي مُطفأ — وضع طبيعي")
     else
-        setStatus("✅ وضع طبيعي — الإرسال للشات والادمن")
+        -- تشغيل النسخ الخفي
+        prevNameMode = (nameMode ~= "silent") and nameMode or prevNameMode
+        nameMode = "silent"
+        setStatus("🔇 النسخ الخفي شغال — أدمن فقط بدون شات", true)
     end
     updateNameModeUI()
 end)
@@ -1031,12 +1036,13 @@ prefixBox.FocusLost:Connect(function()
 end)
 
 local function sendOnce(message)
-    -- نسخ خفي: تجاهل الشات وأرسل للادمن ريموت فقط
-    if not hiddenMode then
+    if not silentMode then
+        -- وضع طبيعي: يرسل للشات وللأدمن
         pcall(function()
             game:GetService("ReplicatedStorage").RemoteEvents.DataService:FireServer(message)
         end)
     end
+    -- أدمن دائماً (سواء خفي أو طبيعي)
     if hdRemote then pcall(function() hdRemote:InvokeServer(message) end) end
 end
 
@@ -1178,14 +1184,14 @@ local loadBtn      = makeBigBtn(ctrlScroll, "تحكم الراديو", 166,
     Color3.fromRGB(0, 200, 110), Color3.fromRGB(0, 130, 70))
 local hideBtn      = makeBigBtn(ctrlScroll, "إخفاء رسائل السبام", 220,
     Color3.fromRGB(30, 200, 200), Color3.fromRGB(15, 130, 130))
-local spinStartBtn = makeBigBtn(ctrlScroll, "تشغيل الدوران", 274,
+local stopHideBtn  = makeBigBtn(ctrlScroll, "إيقاف الحماية", 274,
+    Color3.fromRGB(220, 60, 60), Color3.fromRGB(140, 20, 20))
+local spinStartBtn = makeBigBtn(ctrlScroll, "تشغيل الدوران", 328,
     Color3.fromRGB(140, 220, 40), Color3.fromRGB(80, 150, 20))
-local spinStopBtn  = makeBigBtn(ctrlScroll, "إيقاف الدوران", 328,
+local spinStopBtn  = makeBigBtn(ctrlScroll, "إيقاف الدوران", 382,
     Color3.fromRGB(170, 30, 30), Color3.fromRGB(110, 15, 15))
-local logsBtn      = makeBigBtn(ctrlScroll, "حماية من logs / clogs", 382,
+local logsBtn      = makeBigBtn(ctrlScroll, "حماية من logs / clogs", 436,
     Color3.fromRGB(0, 130, 220), Color3.fromRGB(0, 70, 140))
-local stopLogsBtn  = makeBigBtn(ctrlScroll, "إيقاف الحماية", 436,
-    Color3.fromRGB(200, 50, 50), Color3.fromRGB(130, 20, 20))
 local titleBtn     = makeBigBtn(ctrlScroll, "تقليد الشات", 490,
     Color3.fromRGB(170, 70, 220), Color3.fromRGB(100, 30, 150))
 local allBtn       = makeBigBtn(ctrlScroll, "نسخ all", 544,
@@ -1289,11 +1295,8 @@ local function hideSystemNotifications(obj)
     end
 end
 
-hideBtn.MouseButton1Click:Connect(function()
-    if antiActive then
-        ctrlStatus.Text = "حماية الواجهة مفعلة بالفعل"
-        return
-    end
+local function activateAntiSpam()
+    if antiActive then return end
     antiActive = true
     antiConnection = PlayerGui.DescendantAdded:Connect(function(d)
         task.wait(0.01)
@@ -1304,8 +1307,29 @@ hideBtn.MouseButton1Click:Connect(function()
             hideSystemNotifications(v)
         end
     end)
-    ctrlStatus.Text = "تم تفعيل اخفاء رسائل السبام"
+end
+
+hideBtn.MouseButton1Click:Connect(function()
+    if antiActive then
+        ctrlStatus.Text = "الحماية مفعلة بالفعل"
+        return
+    end
+    activateAntiSpam()
+    ctrlStatus.Text = "✓ تم تفعيل إخفاء رسائل السبام"
     print("تم تفعيل حماية الواجهة.. لن تظهر رسائل System بعد الآن.")
+end)
+
+stopHideBtn.MouseButton1Click:Connect(function()
+    if not antiActive then
+        ctrlStatus.Text = "الحماية غير مفعلة أصلاً"
+        return
+    end
+    antiActive = false
+    if antiConnection then
+        antiConnection:Disconnect()
+        antiConnection = nil
+    end
+    ctrlStatus.Text = "⛔ تم إيقاف الحماية"
 end)
 
 ----------------------------------------------------------------
@@ -1369,16 +1393,6 @@ logsBtn.MouseButton1Click:Connect(function()
     end)
     ctrlStatus.Text = "تم تفعيل حماية logs / clogs"
     print("تم تفعيل الحظر النهائي لقائمة اللوقز")
-end)
-
--- إيقاف الحماية
-stopLogsBtn.MouseButton1Click:Connect(function()
-    if not logsActive then
-        ctrlStatus.Text = "الحماية غير مفعلة أصلاً"
-        return
-    end
-    logsActive = false
-    ctrlStatus.Text = "تم إيقاف الحماية"
 end)
 
 ----------------------------------------------------------------
