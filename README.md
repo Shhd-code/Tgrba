@@ -662,6 +662,27 @@ local function makeBigBtn(parent, text, posY, color1, color2)
     return b
 end
 
+-- ┌─────────────────────────────────────────────────────────┐
+-- │  ScrollingFrame لخانة النسخ - يمنع خروج الأزرار        │
+-- └─────────────────────────────────────────────────────────┘
+local spamScroll = Instance.new("ScrollingFrame", copyPage)
+spamScroll.Position = UDim2.new(0, 0, 0, 82)
+spamScroll.Size = UDim2.new(1, 0, 1, -112)
+spamScroll.BackgroundTransparency = 1
+spamScroll.BorderSizePixel = 0
+spamScroll.ScrollBarThickness = 4
+spamScroll.ScrollBarImageColor3 = Color3.fromRGB(0, 255, 130)
+spamScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+spamScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+local spamList = Instance.new("UIListLayout", spamScroll)
+spamList.Padding = UDim.new(0, 6)
+spamList.SortOrder = Enum.SortOrder.LayoutOrder
+local spamPad = Instance.new("UIPadding", spamScroll)
+spamPad.PaddingTop = UDim.new(0, 6)
+spamPad.PaddingBottom = UDim.new(0, 6)
+spamPad.PaddingLeft = UDim.new(0, 8)
+spamPad.PaddingRight = UDim.new(0, 8)
+
 -- حقل علامة الأدمن
 local prefixRow = Instance.new("Frame", spamScroll)
 prefixRow.BackgroundTransparency = 1
@@ -687,27 +708,6 @@ prefixLabel.Font = Enum.Font.GothamSemibold; prefixLabel.TextSize = 13
 prefixLabel.TextColor3 = Color3.fromRGB(160, 210, 255)
 prefixLabel.TextXAlignment = Enum.TextXAlignment.Left
 prefixLabel.Text = "اكتب علامة الادمن الخاصة بك"
-
--- ┌─────────────────────────────────────────────────────────┐
--- │  ScrollingFrame لخانة النسخ - يمنع خروج الأزرار        │
--- └─────────────────────────────────────────────────────────┘
-local spamScroll = Instance.new("ScrollingFrame", copyPage)
-spamScroll.Position = UDim2.new(0, 0, 0, 82)
-spamScroll.Size = UDim2.new(1, 0, 1, -112)
-spamScroll.BackgroundTransparency = 1
-spamScroll.BorderSizePixel = 0
-spamScroll.ScrollBarThickness = 4
-spamScroll.ScrollBarImageColor3 = Color3.fromRGB(0, 255, 130)
-spamScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
-spamScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-local spamList = Instance.new("UIListLayout", spamScroll)
-spamList.Padding = UDim.new(0, 6)
-spamList.SortOrder = Enum.SortOrder.LayoutOrder
-local spamPad = Instance.new("UIPadding", spamScroll)
-spamPad.PaddingTop = UDim.new(0, 6)
-spamPad.PaddingBottom = UDim.new(0, 6)
-spamPad.PaddingLeft = UDim.new(0, 8)
-spamPad.PaddingRight = UDim.new(0, 8)
 
 -- ┌─────────────────────────────────────────────────────────┐
 -- │  زرا وضع الاسم: اسم كامل / ثلاث حروف                   │
