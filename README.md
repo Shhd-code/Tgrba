@@ -663,9 +663,10 @@ local function makeBigBtn(parent, text, posY, color1, color2)
 end
 
 -- حقل علامة الأدمن
-local prefixRow = Instance.new("Frame", copyPage)
+local prefixRow = Instance.new("Frame", spamScroll)
 prefixRow.BackgroundTransparency = 1
-prefixRow.Position = UDim2.new(0, 10, 0, 84); prefixRow.Size = UDim2.new(1, -20, 0, 36)
+prefixRow.Size = UDim2.new(1, 0, 0, 36)
+prefixRow.LayoutOrder = 0
 
 local prefixBox = Instance.new("TextBox", prefixRow)
 prefixBox.Size = UDim2.new(0, 48, 1, 0); prefixBox.Position = UDim2.new(0, 0, 0, 0)
