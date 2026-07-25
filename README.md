@@ -690,10 +690,10 @@ prefixLabel.Text = "اكتب علامة الادمن الخاصة بك"
 -- ┌─────────────────────────────────────────────────────────┐
 -- │  زرا وضع الاسم: اسم كامل / ثلاث حروف                   │
 -- └─────────────────────────────────────────────────────────┘
-local nameModeRow = Instance.new("Frame", copyPage)
+local nameModeRow = Instance.new("Frame", spamScroll)
 nameModeRow.BackgroundTransparency = 1
-nameModeRow.Position = UDim2.new(0, 10, 0, 124)
-nameModeRow.Size = UDim2.new(1, -20, 0, 34)
+nameModeRow.Size = UDim2.new(1, 0, 0, 34)
+nameModeRow.LayoutOrder = 1
 
 local fullNameBtn = Instance.new("TextButton", nameModeRow)
 fullNameBtn.Size = UDim2.new(0.5, -4, 1, 0)
@@ -751,10 +751,10 @@ end)
 -- ┌─────────────────────────────────────────────────────────┐
 -- │  زر النسخ الخفي / ارجاع للنسخ الظاهر                  │
 -- └─────────────────────────────────────────────────────────┘
-local silentRow = Instance.new("Frame", copyPage)
+local silentRow = Instance.new("Frame", spamScroll)
 silentRow.BackgroundTransparency = 1
-silentRow.Position = UDim2.new(0, 10, 0, 162)
-silentRow.Size = UDim2.new(1, -20, 0, 30)
+silentRow.Size = UDim2.new(1, 0, 0, 30)
+silentRow.LayoutOrder = 2
 
 local silentBtn = Instance.new("TextButton", silentRow)
 silentBtn.Size = UDim2.new(1, 0, 1, 0)
@@ -831,8 +831,8 @@ end)
 -- │  ScrollingFrame لخانة النسخ - يمنع خروج الأزرار        │
 -- └─────────────────────────────────────────────────────────┘
 local spamScroll = Instance.new("ScrollingFrame", copyPage)
-spamScroll.Position = UDim2.new(0, 0, 0, 200)
-spamScroll.Size = UDim2.new(1, 0, 1, -228)
+spamScroll.Position = UDim2.new(0, 0, 0, 82)
+spamScroll.Size = UDim2.new(1, 0, 1, -112)
 spamScroll.BackgroundTransparency = 1
 spamScroll.BorderSizePixel = 0
 spamScroll.ScrollBarThickness = 4
@@ -843,10 +843,10 @@ local spamList = Instance.new("UIListLayout", spamScroll)
 spamList.Padding = UDim.new(0, 6)
 spamList.SortOrder = Enum.SortOrder.LayoutOrder
 local spamPad = Instance.new("UIPadding", spamScroll)
-spamPad.PaddingTop = UDim.new(0, 4)
-spamPad.PaddingBottom = UDim.new(0, 4)
-spamPad.PaddingLeft = UDim.new(0, 6)
-spamPad.PaddingRight = UDim.new(0, 6)
+spamPad.PaddingTop = UDim.new(0, 6)
+spamPad.PaddingBottom = UDim.new(0, 6)
+spamPad.PaddingLeft = UDim.new(0, 8)
+spamPad.PaddingRight = UDim.new(0, 8)
 
 local function makeSpamRow(order)
     local row = Instance.new("Frame", spamScroll)
@@ -925,31 +925,31 @@ local function setStartOff(btn)
 end
 
 -- الصف الأول: سبام
-local rowA = makeSpamRow(1)
+local rowA = makeSpamRow(3)
 makeRowLabel(rowA, "سبام")
 local copySpamBtn = makeStartBtn(rowA)
 local stopBtnA    = makeStopBtn(rowA)
 
 -- الصف الثاني: نسخ غامض
-local rowGhost = makeSpamRow(2)
+local rowGhost = makeSpamRow(4)
 makeRowLabel(rowGhost, "نسخ غامض")
 local copyGhostBtn = makeStartBtn(rowGhost)
 local stopBtnGhost = makeStopBtn(rowGhost)
 
 -- الصف الثالث: Logs
-local rowB = makeSpamRow(3)
+local rowB = makeSpamRow(5)
 makeRowLabel(rowB, "Logs")
 local copyLogsBtn = makeStartBtn(rowB)
 local stopBtnB    = makeStopBtn(rowB)
 
 -- الصف الثالث: Re
-local rowC = makeSpamRow(4)
+local rowC = makeSpamRow(6)
 makeRowLabel(rowC, "Re")
 local copyReBtn = makeStartBtn(rowC)
 local stopBtnC  = makeStopBtn(rowC)
 
 -- الصف الرابع: ⚡ سبام قوي
-local rowD = makeSpamRow(5)
+local rowD = makeSpamRow(7)
 makeRowLabel(rowD, "⚡ سبام قوي")
 local copyPowerBtn = makeStartBtn(rowD)
 local stopBtnD     = makeStopBtn(rowD)
